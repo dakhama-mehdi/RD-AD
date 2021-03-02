@@ -9,6 +9,7 @@
      Tool Name :    DR-AD 
 	===========================================================================
 	.DESCRIPTION
+	Ajouter le script à la tache d'evenement
         Ce script facilite la détéction et les opérations de maintenance sur les requetes d'acces ayx objets dimportant d'annuaire GPO, groupes admins, password, schema
         il offre une lecture simple et facile, si vous souhaitez automatiser avec Powershell, qui retourne des ID illisibles (GUID)
 			
@@ -47,6 +48,7 @@ $array = @()
 $array = Import-Csv -Path C:\Test\array.csv
 }
 
+#importer la liste blanche
 $whitelist= Import-Csv -Path C:\Test\user.csv
 
 
