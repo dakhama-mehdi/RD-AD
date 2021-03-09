@@ -43,7 +43,7 @@ sleep -Seconds 15
 } 
 
 else {
-$array = New-Object -TypeName "System.Collections.ArrayList"
+#$array = New-Object -TypeName "System.Collections.ArrayList"
 $array = [System.Collections.ArrayList]@()
 $array = Import-Csv -Path C:\Test\array.csv
 }
