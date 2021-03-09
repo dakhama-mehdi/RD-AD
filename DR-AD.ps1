@@ -43,8 +43,8 @@ sleep -Seconds 15
 } 
 
 else {
-$array = $null
-$array = @()
+$array = New-Object -TypeName "System.Collections.ArrayList"
+$array = [System.Collections.ArrayList]@()
 $array = Import-Csv -Path C:\Test\array.csv
 }
 
@@ -55,9 +55,10 @@ $whitelist= Import-Csv -Path C:\Test\user.csv
 Write-Host "Processus démarrer" 
 
 Write-Host "Rien à signaler" 
-$result = $null
-$result = @()
-$box = $null
+$result = New-Object -TypeName "System.Collections.ArrayList"
+$result = [System.Collections.ArrayList]@()
+
+$user1 = $obj1 = $null
 
 Get-WinEvent -FilterHashtable @{Logname="Security"; ID = "4662"; startTime = (([DateTime]::Now).AddSeconds(-10))} -ErrorAction SilentlyContinue | ? {$whitelist.name -notcontains $_.properties.value[1]  }  | select -First 50 | foreach {
 
@@ -76,23 +77,70 @@ $typeobjet=  (($array -match $val[6]).nom  -split ("CN="))[1]
 
 $nomobjet= $array -match $val[18]
  
-$box = New-Object PSObject
-$box | Add-Member -MemberType NoteProperty -Name "Utilisateur" -Value "$user"
-$box | Add-Member -MemberType NoteProperty -Name "Objet" -Value $typeobjet
-$box | Add-Member -MemberType NoteProperty -Name "classe" -Value $nomobjet.nom
-$box | Add-Member -MemberType NoteProperty -Name "Nature d audit" -Value $_.KeywordsDisplayNames
-$result += $box
+$Object = New-Object PSObject -Property @{
+        Utilisateur      = $user
+        Objet            = $typeobjet
+        classe           = $nomobjet.nom
+        "Nature d audit" = $_.KeywordsDisplayNames
+
+    }
+    $result += $Object
 
   }
   
-  Write-Host "une requete est détéctée" $result
+  if (($user -ne $user1) ) { 
+ function ShowBalloonTipInfo 
+{
+ 
+[CmdletBinding()]
+param
+(
+[Parameter()]
+$Text,
+ 
+[Parameter()]
+$Title,
+ 
+#It must be 'None','Info','Warning','Error'
+$Icon = 'Warning'
+)
+ 
+Add-Type -AssemblyName System.Windows.Forms
+ 
+#So your function would have to check whether there is already an icon that you can reuse.This is done by using a "shared variable", which really is a variable that has "script:" scope.
+if ($script:balloonToolTip -eq $null)
+{
+#we will need to add the System.Windows.Forms assembly into our PowerShell session before we can make use of the NotifyIcon class.
+$script:balloonToolTip = New-Object System.Windows.Forms.NotifyIcon 
+}
+ 
+$path = Get-Process -id $pid | Select-Object -ExpandProperty Path
+$balloonToolTip.Icon = [System.Drawing.Icon]::ExtractAssociatedIcon($path)
+$balloonToolTip.BalloonTipIcon = $Icon
+$balloonToolTip.BalloonTipText = $Text
+$balloonToolTip.BalloonTipTitle = $Title
+$balloonToolTip.Visible = $true
+ 
+#I thought to display the tool tip for one seconds,so i used 1000 milliseconds when I call ShowBalloonTip.
+$balloonToolTip.ShowBalloonTip(15000)
+}
+
+$Message= "une requete est détéctée de $user sur :  $typeobjet , veuillez patienter, le compte sera desactive" 
+ShowBalloonTipInfo ("$Message","")
+
+ [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+ 
+ $user1 = $user
+ $obj1 = $typeobjet
+ #Disable-ADAccount $user1 
+ } 
+
 
 }
 
 if ($result) {
-$result | Out-GridView -Title "AD security Audit" 
+$result | Out-GridView -Title "AD security Audit" -Wait
 $result = $null
-pause
 cls
 
 }
