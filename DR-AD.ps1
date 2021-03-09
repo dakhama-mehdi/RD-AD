@@ -55,7 +55,6 @@ $whitelist= Import-Csv -Path C:\Test\user.csv
 Write-Host "Processus démarrer" 
 
 Write-Host "Rien à signaler" 
-#$result = New-Object -TypeName "System.Collections.ArrayList"
 $result = [System.Collections.ArrayList]@()
 
 $user1 = $obj1 = $null
