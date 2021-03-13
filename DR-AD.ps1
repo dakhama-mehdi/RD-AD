@@ -15,7 +15,7 @@
 			
 #>
 
-# choisissez un chemin pour extraire la liste des attributs à surveiller en remplaçant la ligne export-csv n36 par le votre
+# choose a path to extract the list of attributes to monitor by replacing the export-csv 
 $dbpath= 'C:\Test\array.csv'
 if ((Test-Path $path) -eq $false) {
 
@@ -24,7 +24,7 @@ Write-Host "Chargement et export de la liste des attributs en cours" `n
 $array = $null
 $array = @()
 
-# vous pouvez alleger le filtre des attributs en ne séléctionnant que les passwords, groupes admins, et gpo par exemple, dans notre exemple nous avons tous séléctionné
+# you can edit this filter, if you want to monitor only (GPO, or Admins account, or passwords)  
 Get-ADObject -SearchBase (Get-ADRootDSE).schemaNamingContext -LDAPFilter '(schemaIDGUID=*)' -Properties name, schemaIDGUID |  ForEach-Object {
 
 
@@ -37,9 +37,6 @@ $array += $box
 
 $array |Export-Csv $dbpath
 
-Write-Host "Patientez avant de démarrer le processus"
-sleep -Seconds 15
-
 } 
 
 else {
@@ -47,19 +44,14 @@ $array = [System.Collections.ArrayList]@()
 $array = Import-Csv -Path $dbpath
 }
 
-#importer la liste blanche
+#import the whitelist contains the name object to exclude like (accountname and computer), use only 'SamAccountName'
 $whitelist= Import-Csv -Path C:\Test\user.csv
 
-
-Write-Host "Processus démarrer" 
-
-Write-Host "Rien à signaler" 
 $result = [System.Collections.ArrayList]@()
 
 $user1 = $obj1 = $null
 
 Get-WinEvent -FilterHashtable @{Logname="Security"; ID = "4662"; startTime = (([DateTime]::Now).AddSeconds(-10))} -ErrorAction SilentlyContinue | ? {$whitelist.name -notcontains $_.properties.value[1]  }  | select -First 50 | foreach {
-
 
 $val = $null
 
@@ -99,7 +91,6 @@ $Text,
 [Parameter()]
 $Title,
  
-#It must be 'None','Info','Warning','Error'
 $Icon = 'Warning'
 )
  
@@ -119,11 +110,11 @@ $balloonToolTip.BalloonTipText = $Text
 $balloonToolTip.BalloonTipTitle = $Title
 $balloonToolTip.Visible = $true
  
-#I thought to display the tool tip for one seconds,so i used 1000 milliseconds when I call ShowBalloonTip.
+#I thought to display the tool tip for 15 seconds,so i used 15000 milliseconds when I call ShowBalloonTip.
 $balloonToolTip.ShowBalloonTip(15000)
 }
 
-$Message= "une requete est détéctée de $user sur :  $typeobjet , veuillez patienter, le compte sera desactive" 
+$Message= "an request is detected from $user on :  $typeobjet , pls wait, the account will be disabled" 
 ShowBalloonTipInfo ("$Message","")
 
  [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
@@ -137,10 +128,13 @@ ShowBalloonTipInfo ("$Message","")
 }
 
 if ($result) {
-$result | Out-GridView -Title "AD security Audit" -Wait
-$result = $null
-cls
 
+# if you use wait pls disable sleep at line 135 and 134, you can also chose to send mail in this step
+#$result | Out-GridView -Title "AD security Audit" -Wait
+$result | Out-GridView -Title "AD security Audit"
+sleep -Seconds 10
+# force quit script, same times a have a problem with sleep when the session is locked, exit have resolve this problem
+exit
 }
 
 
