@@ -36,6 +36,7 @@ by defaut i use the folder test in C:\test, but you can change this value on $db
 * create exclude csv file
 you can use get-adgroupmember or get-adcomputer to create a list that contains only the name of object that you want to exclude from detection, like DC or same server that need to query the schema, also the admin account work on AD
 
+* Note 
 it is preferead to put whitelist in same folder as our path export $dbpath
 
 Now pre-requist is respected, We suggere to run the script the first time with right admin to create a list object to monitor.
@@ -66,6 +67,8 @@ Try to luanch a bloodhound or another tools request, and check the detection
 you can disable AD-account, or block it ... if you want, for this enable this variable at line 133 #Disable-ADAccount $user1
 
 you can also edit the script to send an mail .....
+
+you can edit the object to filter at 28 line, add only same filter distingname like (GPO, or Passwords, or Admins account)
 
 # Thanks  :
 
