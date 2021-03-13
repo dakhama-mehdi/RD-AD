@@ -114,7 +114,7 @@ $balloonToolTip.Visible = $true
 $balloonToolTip.ShowBalloonTip(15000)
 }
 
-$Message= "an request is detected from $user on :  $typeobjet , pls wait, the account will be disabled" 
+$Message= "an request is detected from $user on :  $typeobjet pls wait, the account will be disabled" 
 ShowBalloonTipInfo ("$Message","")
 
  [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
