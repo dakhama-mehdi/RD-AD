@@ -5,7 +5,7 @@ This script, help to detect, track and prevent in real time, the malicious reque
 They allow to easily read the events, convert GUID, and be notified with a action summary, use the whitelist to exclude the detection on specific servers or accounts.
 you can edit it to send mail, block or disable account, .....
 
-![RD-AD-2](https://user-images.githubusercontent.com/49924401/111032657-a43f8680-840d-11eb-9b34-d0306c9e377d.gif)
+![RD-AD](https://user-images.githubusercontent.com/49924401/111032743-04362d00-840e-11eb-866d-8420ccfb9d85.gif)
 
 # About :
 
