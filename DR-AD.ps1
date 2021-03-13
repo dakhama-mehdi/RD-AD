@@ -16,8 +16,8 @@
 #>
 
 # choisissez un chemin pour extraire la liste des attributs à surveiller en remplaçant la ligne export-csv n36 par le votre
-
-if ((Test-Path C:\Test\array.csv) -eq $false) {
+$dbpath= 'C:\Test\array.csv'
+if ((Test-Path $path) -eq $false) {
 
 Write-Host "Chargement et export de la liste des attributs en cours" `n
 
@@ -35,7 +35,7 @@ $array += $box
 
 }
 
-$array |Export-Csv C:\Test\array.csv
+$array |Export-Csv $dbpath
 
 Write-Host "Patientez avant de démarrer le processus"
 sleep -Seconds 15
@@ -44,7 +44,7 @@ sleep -Seconds 15
 
 else {
 $array = [System.Collections.ArrayList]@()
-$array = Import-Csv -Path C:\Test\array.csv
+$array = Import-Csv -Path $dbpath
 }
 
 #importer la liste blanche
