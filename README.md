@@ -25,6 +25,7 @@ Second : turn the script on loop, all X secondes, to check and generate alert, t
 # How to use :
 
 * enable AD DS audit object
+
 you can edit a default domain controllers pollicy or create a new GPO, and enable AD DS succezss and Faillure on 
 "Computer Configuration\Windows Settings\Security Settings\Audit Policies\DS Access\Audit Directory Service Access"
 
