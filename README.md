@@ -1,11 +1,11 @@
-#RD-AD (Requests-Detect on AD)
+# RD-AD (Requests-Detect on AD)
 
 this script, help to detect, track and prevent in real time, the malicious request, attack, or collects information request from AD,  to protect valuable information like ( accounts admins, password, and GPO ...) from tools like BloodHound, Mimikatz....
 
 They allow to easily read the events, convert GUID, and be notified with a action summary, use the whitelist to exclude the detection on specific servers or accounts.
 you can edit it to send mail, block or disable account, .....
 
-#About :
+# About :
 
 requests-detect AD : help to detect and monitor the AD, to give more security.
 
