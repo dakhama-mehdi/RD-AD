@@ -29,6 +29,21 @@ Second : turn the script on loop, all X secondes, to check and generate alert, t
 you can edit a default domain controllers pollicy or create a new GPO, and enable AD DS succezss and Faillure on 
 "Computer Configuration\Windows Settings\Security Settings\Audit Policies\DS Access\Audit Directory Service Access"
 
+* Create a folder 
+create a folder to extract the object that you want to monitor, this step let the detection very fast
+by defaut i use the folder test in C:\test, but you can change this value on $dbpath
+
+*create exclude csv file
+you can use get-adgroupmember or get-adcomputer to create a list that contains only the name of object that you want to exclude from detection, like DC or same server that need to query the schema, also the admin account work on AD
+
+it is preferead to put whitelist in same folder as our path export $dbpath
+
+Now pre-requist is respected, We suggere to run the script the first time with right admin to create a list object to monitor.
+we have two way to do start detection, on Scheduletask or luanch loop script
+
+# USE Scheduletask
+
+
 
 
 
