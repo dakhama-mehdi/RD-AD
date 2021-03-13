@@ -2,16 +2,16 @@
 	.NOTES
 	===========================================================================
 	 Updated:   	Fevrier 08, 2021
-	 Created by:   	Dakhama Mehdi, www.dakhama-mehdi.com
-	 Organization: 	
+	 Created by:   	Dakhama Mehdi
+	 Special Thanks for help to : Baudin Nicolas, Vierman Loic
+	 Advice : DEMAN-BARCELO, Cortes Sylvain
+	 Organization : CADIM	
 	 Filename:      Detect-request-AD.ps1
-	 Special Thanks for help to : 
-     Tool Name :    DR-AD 
+	 Tool Name :    DR-AD 
 	===========================================================================
 	.DESCRIPTION
-	Ajouter le script à la tache d'evenement
-        Ce script facilite la détéction et les opérations de maintenance sur les requetes d'acces ayx objets dimportant d'annuaire GPO, groupes admins, password, schema
-        il offre une lecture simple et facile, si vous souhaitez automatiser avec Powershell, qui retourne des ID illisibles (GUID)
+	This script, help to detect, track and prevent in real time, the malicious request, attack, or collects information request from AD,
+	to protect valuable information like ( accounts admins, password, and GPO ...)
 			
 #>
 
