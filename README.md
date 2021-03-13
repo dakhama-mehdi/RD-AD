@@ -43,6 +43,29 @@ we have two way to do start detection, on Scheduletask or luanch loop script
 
 # USE Scheduletask
 
+if the script is executed on first time without error, go to event security and attach the event 4662 to our script, the script must be start with powershell, you can use this settings on Action tabs :
+
+Program : Powershell.exe
+ADD arguments : -WindowStyle Hidden -file your-path\DR-AD-direct.ps1
+then run the script with highest privileges
+
+# Use loop Script
+
+you must only run the script DR-AD-loop.ps1, on your ISE with admin rights, you can convert it to exe or service if you want
+
+# trying now detection or attack
+
+Try to luanch a bloodhound or another tools request, and check the detection
+
+# disable account and edit script
+
+you can disable AD-account, or block it ... if you want, for this enable this variable at line 133 #Disable-ADAccount $user1
+
+you can also edit the script to send an mail .....
+
+# Thanks :
+
+
 
 
 
