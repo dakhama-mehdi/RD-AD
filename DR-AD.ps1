@@ -5,7 +5,7 @@
 	 Created by:   	Dakhama Mehdi
 	 Special Thanks for help to : Baudin Nicolas, Vierman Loic
 	 Advice : DEMAN-BARCELO, Cortes Sylvain
-	 Organization : CADIM	
+	 Organization : CADIM.org
 	 Filename:      Detect-request-AD.ps1
 	 Tool Name :    DR-AD 
 	===========================================================================
