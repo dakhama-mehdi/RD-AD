@@ -17,7 +17,7 @@
 
 # choose a path to extract the list of attributes to monitor by replacing the export-csv 
 $dbpath= 'C:\Test\array.csv'
-if ((Test-Path $path) -eq $false) {
+if ((Test-Path $dbpath) -eq $false) {
 
 Write-Host "Chargement et export de la liste des attributs en cours" `n
 
