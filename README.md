@@ -33,15 +33,19 @@ you can edit a default domain controllers pollicy or create a new GPO, and enabl
 create a folder to extract the object that you want to monitor, this step let the detection very fast
 by defaut i use the folder test in C:\test, but you can change this value on $dbpath
 
-*create exclude csv file
+* create exclude csv file
 you can use get-adgroupmember or get-adcomputer to create a list that contains only the name of object that you want to exclude from detection, like DC or same server that need to query the schema, also the admin account work on AD
 
 it is preferead to put whitelist in same folder as our path export $dbpath
 
 Now pre-requist is respected, We suggere to run the script the first time with right admin to create a list object to monitor.
-we have two way to do start detection, on Scheduletask or luanch loop script
 
-# USE Scheduletask
+
+# Run the script
+
+we have two way to do start detection, by use Scheduletask or run loop script
+
+* USE Scheduletask
 
 if the script is executed on first time without error, go to event security and attach the event 4662 to our script, the script must be start with powershell, you can use this settings on Action tabs :
 
@@ -49,15 +53,15 @@ Program : Powershell.exe
 ADD arguments : -WindowStyle Hidden -file your-path\DR-AD-direct.ps1
 then run the script with highest privileges
 
-# Use loop Script
+* Use loop Script
 
 you must only run the script DR-AD-loop.ps1, on your ISE with admin rights, you can convert it to exe or service if you want
 
-# trying now detection or attack
+* trying now detection or attack
 
 Try to luanch a bloodhound or another tools request, and check the detection
 
-# disable account and edit script
+* disable account and edit script
 
 you can disable AD-account, or block it ... if you want, for this enable this variable at line 133 #Disable-ADAccount $user1
 
