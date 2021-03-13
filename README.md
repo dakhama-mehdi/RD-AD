@@ -69,7 +69,7 @@ you can also edit the script to send an mail .....
 
 # Thanks  :
 
-i would like to thank some leader french community, for their advice, hepful and contribution
+I would like to thank some leader french community, for their advice, hepful and contribution
 
 DEMAN-BARCELO Thierry : leader french MCP community infra, exchange and Microsoft 365
 
