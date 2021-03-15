@@ -1,41 +1,44 @@
 # RD-AD (Requests-Detect on AD) 
 
-This script, helps to detect, protect and prevents in real time, the malicious requests, attacks, or collect information requests from AD,  to protect valuable information like ( accounts admins, password, and GPO ...) from tools like BloodHound, Mimikatz....
+TThis script will help you to detect, prevent and protect your Active Directory against malicious request, on-going penetration and discovering data collect in a nearly real-time manner. Valuable information like Administrator accounts, password hashes, GPO will be protected more efficiently against known toolkit used by hackers and security teams (BloodHound, Mimikatz, ...). 
 
-Work with all Windows language version. They allow to easily read the events, convert GUID, and be notified with a action summary, use the whitelist to exclude the detection on specific servers or accounts. you can edit it to send mail, block or disable account, .....
+While reading the events log pool, the script search for specific event and notify you with an action summary in a human readable format (GUID are converted). You can also customize it with white-lists (server or account exclusion) and set it up to send you an email, automatically block or disable a suspicious account, ...
 
 ![RD-AD](https://user-images.githubusercontent.com/49924401/111032743-04362d00-840e-11eb-866d-8420ccfb9d85.gif)
 
 # About :
 
-requests-detect AD : helps to detect and monitor the AD, to give more security
+requests-detect AD : Monitor Active Directory to enhance your security footprint
 
-the script can be used on two way: 
-
-First : adding an event in task schedule, this way is very fast, but needs an configuration.
-
-Second : turning the script on loop, all X secondes, to check and generate alert, this way is slower than the first way, but easier to configure.
-
+This script can be used by either:
+- Using the TaskScheduler to monitor for a specific event ID and run the script upon it ; this is the fastest way to go but needs some extra efforts.
+- Let the script run in an infinite loop, which is the simplest way to use it with the cost of a slower processing.
 
 # PREREQUISITE 
 
-* enable AD DS audit object
-* optional : create a folder to extract schema details, only one times
-* create a whitelist to exclude same account or machines 
+* ADDS Audit for Object should be enabled
+* Schema Data to be added in a folder for referal (optional)
+* White-list with computer/user objects to exclude 
 
 # How to use :
 
-* Enable AD DS audit object
+1. To enable ADDS Audit for Object:
+--> Create a GPO and link it to the Domain Controllers container.
+--> Go to "Computer Configuration\Windows Settings\Security Settings\Audit Policies\DS Access\Audit Directory Service Access" and enable the option for success and failure
 
-you can edit the default domain controller policy or create a new GPO, and enable AD DS success and Failure on  
-"Computer Configuration\Windows Settings\Security Settings\Audit Policies\DS Access\Audit Directory Service Access"
+2. To allow the script to run smoothly:
+--> Create a new folder located on C:\ and name it "TEST" (c:\test)
+--> You can modify the folder name by editing the script and modifying the script parameter $dbPath following your needs.
 
-* Create a folder 
-Create a folder to extract the object that you want to monitor, this step let the detection very fast
-by defaut i use the folder test in C:\test, but you can change this value on $dbpath
+3. Prepare white-list:
+--> Generate white-list for account exfiltered from a group membership with:
+-----> get-adGroupMember [groupName] | export-csv c:\test\myWhiteList.csv -append
+--> Generate white-list for computer account based on a OU localization:
+-----> get-adComputer -filter * -searchBase [OU distinguishedName] | export-csv c:\test\myComputers.csv -append
+--> Note: white-list should be placed in c:\test.
 
-* Create exclude csv file
-You can use get-adgroupmember or get-adcomputer to create a list that contains only the name of object that you want to exclude from detection, like DC or same server that need to query the schema, also the admin account work on AD
+4.First run:
+--> run the script with a privileged account the first time to let it create referals
 
 * Note 
 it is preferead to put whitelist in same folder as our path export $dbpath
@@ -45,27 +48,17 @@ Now pre-requist is respected, We suggere to run the script the first time with r
 
 # Run the script
 
-We have two way to start detection, by using Scheduletask or running a loop script
+Using TaskScheduler:
+Create a new Task and set the schedule to act on event detection. Then, add event ID 4662 as trigger and add as command line "Powershell.exe" ; arguments should be "-WindowStyle Hidden -file your-path\DR-AD-direct.ps1". Before closing, set the schedule to run as System and activate the option "run the script with highest privileges".
 
-* USING Scheduletask
+Using a script loop:
+fire-up Powershell.exe in an elevated Shell, then run the script "DR-AD-loop.ps1".
 
-If the script is executed at first time without error, go to event security and attach the event 4662 to our script, the script must be start with powershell, you can use this settings on Action tabs :
+Ensuring scripts functionnality:
+You can ensure the script is properly working by running a BloodHound request, or any other tools.
 
-Program : Powershell.exe
-ADD arguments : -WindowStyle Hidden -file your-path\DR-AD-direct.ps1
-then run the script with highest privileges
-
-* RUNNING a loop Script
-
-you must only run the script DR-AD-loop.ps1, on your ISE with admin rights, you can convert it to exe or service if you want
-
-* trying now detection or attack
-
-Try to launch a bloodhound or another tool request, and check the detection
-
-* disable account and edit script
-
-you can disable AD-account, or block it ... if you want, to enable that, the variable is at line 133 #Disable-ADAccount $user1
+Disabling Account automatically:
+Edit the script and move toward line 133: remove the comment sign ("#") at the beginning of #Disable-ADAccount $user1
 
 you can also edit the script to send an email .....
 
