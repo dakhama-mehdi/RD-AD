@@ -40,6 +40,8 @@ This script can be used by either:
 4.First run:
 --> run the script with a privileged account the first time to let it create referals
 
+* Video How to use
+https://youtu.be/8svJT7lL3W4
 * Note 
 it is preferead to put whitelist in same folder as our path export $dbpath
 
