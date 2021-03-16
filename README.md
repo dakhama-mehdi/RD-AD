@@ -1,6 +1,6 @@
 # RD-AD (Requests-Detect on AD) 
 
-TThis script will help you to detect, prevent and protect your Active Directory against malicious request, on-going penetration and discovering data collect in a nearly real-time manner. Valuable information like Administrator accounts, password hashes, GPO will be protected more efficiently against known toolkit used by hackers and security teams (BloodHound, Mimikatz, ...). 
+This script will help you to detect, prevent and protect your Active Directory against malicious request, on-going penetration and discovering data collect in a nearly real-time manner. Valuable information like Administrator accounts, password hashes, GPO will be protected more efficiently against known toolkit used by hackers and security teams (BloodHound, Mimikatz, ...). 
 
 While reading the events log pool, the script search for specific event and notify you with an action summary in a human readable format (GUID are converted). You can also customize it with white-lists (server or account exclusion) and set it up to send you an email, automatically block or disable a suspicious account, ...
 
