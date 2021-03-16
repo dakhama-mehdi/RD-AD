@@ -121,6 +121,7 @@ ShowBalloonTipInfo ("$Message","")
  
  $user1 = $user
  $obj1 = $typeobjet
+ #You can edit this part to disable Account, or deny access to AD, or send email
  #Disable-ADAccount $user1 
  } 
 
