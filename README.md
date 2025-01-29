@@ -26,19 +26,12 @@ This script can be used by either:
 --> Create a GPO and link it to the Domain Controllers container.
 --> Go to "Computer Configuration\Windows Settings\Security Settings\Audit Policies\DS Access\Audit Directory Service Access" and enable the option for success and failure
 
-2. To allow the script to run smoothly:
---> Create a new folder located on C:\ and name it "TEST" (c:\test)
---> You can modify the folder name by editing the script and modifying the script parameter $dbPath following your needs.
+2. Running the Script Properly
+Run the script as an administrator rd-ad-loop.ps1 or schedule rd-ad.ps1 as a task triggered by Event 4662.
+The script will automatically create the required files in C:\Temp:
+A whitelist file to exclude admin accounts.
+An array file to extract sensitive schema objects.
 
-3. Prepare white-list:
---> Generate white-list for account exfiltered from a group membership with:
------> get-adGroupMember [groupName] | export-csv c:\test\myWhiteList.csv -append
---> Generate white-list for computer account based on a OU localization:
------> get-adComputer -filter * -searchBase [OU distinguishedName] | export-csv c:\test\myComputers.csv -append
---> Note: white-list should be placed in c:\test.
-
-4.First run:
---> run the script with a privileged account the first time to let it create referals
 
 * Video How to use
 https://youtu.be/8svJT7lL3W4
