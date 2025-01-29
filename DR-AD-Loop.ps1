@@ -16,14 +16,16 @@
 #>
 
 
-
-if ((Test-Path C:\Test\array.csv) -eq $false) {
+# choose a path to extract the list of attributes to monitor by replacing the export-csv 
+$dbpath= 'C:\Temp\array.csv'
+if ((Test-Path $dbpath) -eq $false) {
 
 Write-Host "Chargement et export de la liste des attributs en cours" `n
 
 $array = $null
 $array = @()
 
+# you can edit this filter, if you want to monitor only (GPO, or Admins account, or passwords)  
 Get-ADObject -SearchBase (Get-ADRootDSE).schemaNamingContext -LDAPFilter '(schemaIDGUID=*)' -Properties name, schemaIDGUID |  ForEach-Object {
 
 
@@ -34,62 +36,78 @@ $array += $box
 
 }
 
-$array |Export-Csv C:\Test\array.csv
+$array |Export-Csv $dbpath
+$array = [System.Collections.ArrayList]@()
+$array = Import-Csv -Path $dbpath
 
-Write-Host "Patientez avant de démarrer le processus"
-sleep -Seconds 15
+} 
+else {
+$array = [System.Collections.ArrayList]@()
+$array = Import-Csv -Path $dbpath
+}
+
+#import the whitelist contains the name object to exclude like (accountname and computer), use only 'SamAccountName'
+$whitelist= 'C:\Temp\myWhiteList.csv'
+if ((Test-Path $whitelist) -eq $false) {
+
+# Retrieve all groups protected by AdminSDHolder
+$AdminGroups = Get-ADGroup -Filter {AdminCount -eq 1}
+
+# List the members of each group without displaying their names
+
+$AdminGroups | ForEach-Object {
+    #Write-Host "Groupe : $($_.Name)" -ForegroundColor Green
+    Get-ADGroupMember -Identity $_ -Recursive | Select-Object name,distinguishedName,SamAccountName | export-csv c:\temp\myWhiteList.csv -append
+}
 
 } 
 
-else {
-$array = [System.Collections.ArrayList]@()
-$array = Import-Csv -Path C:\Test\array.csv
-}
+$whitelist= Import-Csv -Path C:\Temp\myWhiteList.csv
 
-#chemin du liste blanche
-$whitelist= Import-Csv -Path C:\Test\user.csv
+$result = [System.Collections.ArrayList]@()
+
+$user1 = $obj1 = $null
 
 $startdate = (([DateTime]::Now).AddSeconds(-10))
 $enddate = ([DateTime]::Now)
 
 do {
 
-Write-Host "Processus démarrer" 
-
-Write-Host "Rien à signaler" 
+Write-Host "Process started"
+Write-Host "Nothing to report"
+ 
 $result = $null 
 $user1 = $obj1 = $null
 $result = [System.Collections.ArrayList]@()
 $box = $null
 
 
-
-Get-WinEvent -FilterHashtable @{Logname="Security"; ID = "4662"; startTime = $startdate; endTime = $enddate} -ErrorAction SilentlyContinue | ? {$whitelist.name -notcontains $_.properties.value[1]  }  | select -First 50 | foreach {
-
+Get-WinEvent -FilterHashtable @{Logname="Security"; ID = "4662"; startTime = (([DateTime]::Now).AddSeconds(-10))} -ErrorAction SilentlyContinue | ? {$whitelist.SamAccountName -notcontains $_.properties.value[1]  }  | select -First 50 | foreach {
 
 $val = $null
-
 
 $user= $_.properties.value[1]
 
 $val= (($_.properties.value -split ("{")) -split ("}"))
+$classe = $null
 
 if (($array | select GUID) -match $val[6] -or ($array | select GUID) -match $val[18] )
 
  { 
 
-$typeobjet=  (($array -match $val[6]).nom  -split ("CN="))[1]
+$typeobjet =  (($array -match $val[6]).nom  -split ("CN="))[1]
 
 $nomobjet= $array -match $val[18]
+
+$classe = $nomobjet.nom
  
 $Object = New-Object PSObject -Property @{
-        Utilisateur      = $user
+        Username      = $user
         Objet            = $typeobjet
-        classe           = $nomobjet.nom
-        "Nature d audit" = $_.KeywordsDisplayNames
+        classe           = $classe
+        "Audit type" = $_.KeywordsDisplayNames
 
     }
-
     $result += $Object
 
   }
@@ -107,7 +125,6 @@ $Text,
 [Parameter()]
 $Title,
  
-#It must be 'None','Info','Warning','Error'
 $Icon = 'Warning'
 )
  
@@ -127,17 +144,47 @@ $balloonToolTip.BalloonTipText = $Text
 $balloonToolTip.BalloonTipTitle = $Title
 $balloonToolTip.Visible = $true
  
-#I thought to display the tool tip for one seconds,so i used 1000 milliseconds when I call ShowBalloonTip.
+#I thought to display the tool tip for 15 seconds,so i used 15000 milliseconds when I call ShowBalloonTip.
 $balloonToolTip.ShowBalloonTip(15000)
 }
 
-$Message= "une requete est détéctée de $user sur :  $typeobjet , veuillez patienter, le compte sera desactive" 
+# Function to write an event to the custom Windows Event Log
+function Write-EventToLog {
+    param (
+        [string]$message,
+        [string]$eventType = "Information" # By default, it is an Information event (can be "Error", "Warning", etc.)
+    )
+
+    # Custom event log name and source
+    $logName = "Alerte-Request-AD"
+    $source = "DR-AD"
+
+    # Check if the source exists, otherwise create it
+    if (-not (Get-EventLog -List | Where-Object {$_.Log -eq $logName})) {
+        New-EventLog -LogName $logName -Source $source
+    }
+
+    # Define the event type (Information, Warning, Error)
+    $eventTypeEnum = [System.Diagnostics.EventLogEntryType]::$eventType
+
+    # Write the event to the log
+    Write-EventLog -LogName $logName -Source $source -EntryType $eventTypeEnum -EventId 1001 -Message $message
+}
+
+
+$Message= "an request is detected from $user on : $classe  pls wait, the account will be disabled" 
+$Messagelogs = "an request is detected from $user on : $classe  type d'object $typeobjet"
 ShowBalloonTipInfo ("$Message","")
+
+Write-EventToLog -message $Messagelogs -eventType "Warning"
+
+
 
  [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
  
  $user1 = $user
  $obj1 = $typeobjet
+ #You can edit this part to disable Account, or deny access to AD, or send email
  #Disable-ADAccount $user1 
  } 
 
@@ -151,7 +198,7 @@ cls
 }
 
 Write-Host $enddate
-Write-Host "En ecoute"
+Write-Host "Listening"
 sleep -Seconds 10
 $startdate= $startdate.AddSeconds(9)
 $enddate= $enddate.AddSeconds(10)
@@ -159,5 +206,4 @@ Write-Host $enddate
 
 
   } until ($val -eq "test")
-
 
