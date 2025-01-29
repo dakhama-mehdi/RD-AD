@@ -1,7 +1,8 @@
 <#	
 	.NOTES
 	===========================================================================
-	 Updated:   	Mars, 2021
+	 Update ! 01,2025
+         Created :   	Mars, 2021
 	 Created by:   	Dakhama Mehdi
 	 Special Thanks for help to : Baudin Nicolas, Vierman Loic
 	 Advice : DEMAN-BARCELO, Cortes Sylvain
@@ -16,7 +17,7 @@
 #>
 
 # choose a path to extract the list of attributes to monitor by replacing the export-csv 
-$dbpath= 'C:\Test\array.csv'
+$dbpath= 'C:\Temp\array.csv'
 if ((Test-Path $dbpath) -eq $false) {
 
 Write-Host "Chargement et export de la liste des attributs en cours" `n
@@ -36,41 +37,60 @@ $array += $box
 }
 
 $array |Export-Csv $dbpath
+$array = [System.Collections.ArrayList]@()
+$array = Import-Csv -Path $dbpath
 
 } 
-
 else {
 $array = [System.Collections.ArrayList]@()
 $array = Import-Csv -Path $dbpath
 }
 
 #import the whitelist contains the name object to exclude like (accountname and computer), use only 'SamAccountName'
-$whitelist= Import-Csv -Path C:\Test\user.csv
+$whitelist= 'C:\Temp\myWhiteList.csv'
+if ((Test-Path $whitelist) -eq $false) {
+
+# Retrieve all groups protected by AdminSDHolder
+$AdminGroups = Get-ADGroup -Filter {AdminCount -eq 1}
+
+# List the members of each group without displaying their names
+
+$AdminGroups | ForEach-Object {
+    #Write-Host "Groupe : $($_.Name)" -ForegroundColor Green
+    Get-ADGroupMember -Identity $_ -Recursive | Select-Object name,distinguishedName,SamAccountName | export-csv c:\temp\myWhiteList.csv -append
+}
+
+} 
+
+$whitelist= Import-Csv -Path C:\Temp\myWhiteList.csv
 
 $result = [System.Collections.ArrayList]@()
 
 $user1 = $obj1 = $null
 
-Get-WinEvent -FilterHashtable @{Logname="Security"; ID = "4662"; startTime = (([DateTime]::Now).AddSeconds(-10))} -ErrorAction SilentlyContinue | ? {$whitelist.name -notcontains $_.properties.value[1]  }  | select -First 50 | foreach {
+Get-WinEvent -FilterHashtable @{Logname="Security"; ID = "4662"; startTime = (([DateTime]::Now).AddSeconds(-10))} -ErrorAction SilentlyContinue | ? {$whitelist.SamAccountName -notcontains $_.properties.value[1]  }  | select -First 50 | foreach {
 
 $val = $null
 
 $user= $_.properties.value[1]
 
 $val= (($_.properties.value -split ("{")) -split ("}"))
+$classe = $null
 
 if (($array | select GUID) -match $val[6] -or ($array | select GUID) -match $val[18] )
 
  { 
 
-$typeobjet=  (($array -match $val[6]).nom  -split ("CN="))[1]
+$typeobjet =  (($array -match $val[6]).nom  -split ("CN="))[1]
 
 $nomobjet= $array -match $val[18]
+
+$classe = $nomobjet.nom
  
 $Object = New-Object PSObject -Property @{
         Utilisateur      = $user
         Objet            = $typeobjet
-        classe           = $nomobjet.nom
+        classe           = $classe
         "Nature d audit" = $_.KeywordsDisplayNames
 
     }
@@ -114,8 +134,37 @@ $balloonToolTip.Visible = $true
 $balloonToolTip.ShowBalloonTip(15000)
 }
 
-$Message= "an request is detected from $user on :  $typeobjet pls wait, the account will be disabled" 
+# Function to write an event to the custom Windows Event Log
+function Write-EventToLog {
+    param (
+        [string]$message,
+        [string]$eventType = "Information" # By default, it is an Information event (can be "Error", "Warning", etc.)
+    )
+
+    # Custom event log name and source
+    $logName = "Alerte-Request-AD"
+    $source = "DR-AD"
+
+    # Check if the source exists, otherwise create it
+    if (-not (Get-EventLog -List | Where-Object {$_.Log -eq $logName})) {
+        New-EventLog -LogName $logName -Source $source
+    }
+
+    # Define the event type (Information, Warning, Error)
+    $eventTypeEnum = [System.Diagnostics.EventLogEntryType]::$eventType
+
+    # Write the event to the log
+    Write-EventLog -LogName $logName -Source $source -EntryType $eventTypeEnum -EventId 1001 -Message $message
+}
+
+
+$Message= "an request is detected from $user on : $classe  pls wait, the account will be disabled" 
+$Messagelogs = "an request is detected from $user on : $classe  type d'object $typeobjet"
 ShowBalloonTipInfo ("$Message","")
+
+Write-EventToLog -message $Messagelogs -eventType "Warning"
+
+
 
  [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
  
