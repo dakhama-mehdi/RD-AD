@@ -26,8 +26,8 @@ This script can be used by either:
 --> Create a GPO and link it to the Domain Controllers container.
 --> Go to "Computer Configuration\Windows Settings\Security Settings\Audit Policies\DS Access\Audit Directory Service Access" and enable the option for success and failure
 
-2. Running the Script Properly
-Run the script as an administrator rd-ad-loop.ps1 or schedule rd-ad.ps1 as a task triggered by Event 4662.
+2. Running the Script Properly. 
+Run the script as an administrator DR-ad-loop.ps1 or schedule DR-ad.ps1 as a task triggered by Event 4662.
 The script will automatically create the required files in C:\Temp:
 A whitelist file to exclude admin accounts.
 An array file to extract sensitive schema objects.
