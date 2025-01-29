@@ -2,11 +2,10 @@
 	.NOTES
 	===========================================================================
 	 Updated:   	Fevrier 08, 2021
-	 Created by:   	Dakhama Mehdi, www.dakhama-mehdi.com, 
-	 Organization: 	
+	 Created by:   	Dakhama Mehdi
 	 Filename:      Detect-request-AD.ps1
 	 Special Thanks for help to : 
-     Tool Name :    DR-AD 
+         Tool Name :    DR-AD 
 	===========================================================================
 	.DESCRIPTION 
         Detection en continue, période de 10 secondes
