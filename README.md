@@ -17,8 +17,6 @@ This script can be used by either:
 # PREREQUISITE 
 
 * ADDS Audit for Object should be enabled
-* Schema Data to be added in a folder for referal (optional)
-* White-list with computer/user objects to exclude 
 
 # How to use :
 
