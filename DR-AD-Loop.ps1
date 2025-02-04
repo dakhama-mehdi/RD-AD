@@ -1,16 +1,20 @@
 <#	
 	.NOTES
-	===========================================================================
-	 Updated:   	Fevrier 08, 2021
-	 Created by:   	Dakhama Mehdi
-	 Filename:      Detect-request-AD.ps1
-	 Special Thanks for help to : 
-         Tool Name :    DR-AD 
-	===========================================================================
-	.DESCRIPTION 
-        Detection en continue, période de 10 secondes
-        Ce script facilite la détéction et les opérations de maintenance sur les requetes d'acces ayx objets dimportant d'annuaire GPO, groupes admins, password, schema
-        il offre une lecture simple et facile, si vous souhaitez automatiser avec Powershell, qui retourne des ID illisibles (GUID)
+===============================================================================
+  Updated :       February 08, 2025 
+  Created : 	  February 08, 2021
+  Created by:     Dakhama Mehdi
+  Filename:       Detect-request-AD.ps1
+  Tool Name:      DR-AD
+===============================================================================
+
+.DESCRIPTION  
+  Continuous detection with a 10-second interval.  
+  This script facilitates the detection and monitoring of access requests to 
+  critical directory objects such as GPOs, admin groups, passwords, and the schema.  
+
+  It provides a simple and readable output, making it easier to automate monitoring 
+  with PowerShell, which usually returns unreadable object IDs (GUIDs).
 			
 #>
 
